@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Book Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .books-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            perspective: 1000px;
+        }
+
+        .book {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            transform-style: preserve-3d;
+            animation: float 20s infinite linear;
+        }
+
+        /* Generate 15 books with different positions, delays, and colors */
+        .book:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        .book:nth-child(2) {
+            top: 20%;
+            left: 80%;
+            animation-delay: 1s;
+        }
+        .book:nth-child(3) {
+            top: 70%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+        .book:nth-child(4) {
+            top: 50%;
+            left: 85%;
+            animation-delay: 3s;
+        }
+        .book:nth-child(5) {
+            top: 85%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+        .book:nth-child(6) {
+            top: 15%;
+            left: 40%;
+            animation-delay: 5s;
+        }
+        .book:nth-child(7) {
+            top: 60%;
+            left: 60%;
+            animation-delay: 6s;
+        }
+        .book:nth-child(8) {
+            top: 40%;
+            left: 10%;
+            animation-delay: 7s;
+        }
+        .book:nth-child(9) {
+            top: 90%;
+            left: 75%;
+            animation-delay: 8s;
+        }
+        .book:nth-child(10) {
+            top: 35%;
+            left: 50%;
+            animation-delay: 9s;
+        }
+        .book:nth-child(11) {
+            top: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+        .book:nth-child(12) {
+            top: 75%;
+            left: 45%;
+            animation-delay: 11s;
+        }
+        .book:nth-child(13) {
+            top: 55%;
+            left: 35%;
+            animation-delay: 12s;
+        }
+        .book:nth-child(14) {
+            top: 30%;
+            left: 65%;
+            animation-delay: 13s;
+        }
+        .book:nth-child(15) {
+            top: 80%;
+            left: 20%;
+            animation-delay: 14s;
+        }
+
+        /* Book cover and pages */
+        .book-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            animation: book-open 7s infinite ease-in-out;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .book:nth-child(1) .book-cover { background: #ff5252; }
+        .book:nth-child(2) .book-cover { background: #ffb142; }
+        .book:nth-child(3) .book-cover { background: #33d9b2; }
+        .book:nth-child(4) .book-cover { background: #34ace0; }
+        .book:nth-child(5) .book-cover { background: #706fd3; }
+        .book:nth-child(6) .book-cover { background: #ff793f; }
+        .book:nth-child(7) .book-cover { background: #d1ccc0; }
+        .book:nth-child(8) .book-cover { background: #ffda79; }
+        .book:nth-child(9) .book-cover { background: #ff5252; }
+        .book:nth-child(10) .book-cover { background: #ffb142; }
+        .book:nth-child(11) .book-cover { background: #33d9b2; }
+        .book:nth-child(12) .book-cover { background: #34ace0; }
+        .book:nth-child(13) .book-cover { background: #706fd3; }
+        .book:nth-child(14) .book-cover { background: #ff793f; }
+        .book:nth-child(15) .book-cover { background: #d1ccc0; }
+
+        .pages {
+            position: absolute;
+            width: 98%;
+            height: 98%;
+            top: 1%;
+            left: 1%;
+            background: #f8f8f8;
+            border-radius: 3px;
+            transform-origin: left;
+            z-index: -1;
+        }
+
+        /* Define animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        @keyframes book-open {
+            0%, 100% {
+                transform: rotateY(0deg);
+            }
+            50% {
+                transform: rotateY(-180deg);
+            }
+        }
+
+        /* Login Container */
+        .auth-container {
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 350px;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .auth-container h2 {
+            color: #2C3E50;
+            margin-bottom: 35px;
+            font-weight: bold;
+            font-size: 2.2em;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #34495E;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #4b6cb7;
+            outline: none;
+            box-shadow: 0 0 10px rgba(75, 108, 183, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        p {
+            margin-top: 25px;
+            color: #7F8C8D;
+            font-size: 1em;
+        }
+
+        a {
+            color: #4b6cb7;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #182848;
+            text-decoration: underline;
+        }
+
+        .book-icon {
+            font-size: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Books Animation -->
+    <div class="books-container">
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+        <div class="book">
+            <div class="book-cover"></div>
+            <div class="pages"></div>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-container" id="login-form">
+        <h2>📚 Login</h2>
+        <form id="login-form">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" required>
+            
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required>
+            
+            <button type="submit">Log In</button>
+        </form>
+        <p>Don't have an account? <a href="register.html">Register</a></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL8miQIUOcNr8eXiAn-nzk8PryWtlzsOg",
+            authDomain: "project401-5edfe.firebaseapp.com",
+            projectId: "project401-5edfe",
+            storageBucket: "project401-5edfe.appspot.com",
+            messagingSenderId: "586276062146",
+            appId: "1:586276062146:web:64a83638566f23e4858c5b"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Handle login form submission
+        document.getElementById("login-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    alert("Login Successful!");
+                    window.location.href = "dashboard.html"; // Redirect to dashboard
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                });
+        });
+    </script>
+</body>
+</html>
