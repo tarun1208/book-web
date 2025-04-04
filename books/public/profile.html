@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes shine {
+            0% { background-position: -100px; }
+            100% { background-position: 300px; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 172, 224, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(52, 172, 224, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 172, 224, 0); }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2, #6B8DD6);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(-5deg);
+            top: -50px;
+            left: -20%;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(5deg);
+            bottom: -50px;
+            left: -20%;
+        }
+        
+        .book {
+            position: absolute;
+            width: 240px;
+            height: 320px;
+            background: linear-gradient(145deg, #3d5afe, #5773ff);
+            border-radius: 8px 2px 2px 8px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2), 0 0 0 20px rgba(255, 255, 255, 0.03);
+            right: 5%;
+            top: 20%;
+            transform: rotate(10deg);
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .book::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        .book::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(to right, #3d5afe, #5773ff);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .book .pages {
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 70%;
+            height: 80%;
+        }
+        
+        .book .pages .line {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out;
+            z-index: 10;
+        }
+        
+        .profile-pic-container {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 6px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .profile-pic-container:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+        
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.1);
+        }
+        
+        .profile-placeholder {
+            font-size: 64px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .profile-pic-container:hover .upload-icon {
+            opacity: 1;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #3d5afe;
+            margin-top: 80px;
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-group:nth-child(1) { animation: fadeIn 0.6s ease-out 0.1s both; }
+        .form-group:nth-child(2) { animation: fadeIn 0.6s ease-out 0.2s both; }
+        .form-group:nth-child(3) { animation: fadeIn 0.6s ease-out 0.3s both; }
+        .form-group:nth-child(4) { animation: fadeIn 0.6s ease-out 0.4s both; }
+        .form-group:nth-child(5) { animation: fadeIn 0.6s ease-out 0.5s both; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group:focus-within label {
+            color: #3d5afe;
+            transform: translateY(-5px);
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group:focus-within .input-icon {
+            color: #3d5afe;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        input:focus {
+            border-color: #3d5afe;
+            box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.2);
+            outline: none;
+            background: white;
+        }
+        
+        input[type="file"] {
+            padding: 12px;
+            padding-left: 45px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #3d5afe, #5773ff);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+            box-shadow: 0 10px 20px rgba(61, 90, 254, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(61, 90, 254, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(-2px);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 100px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-15deg);
+            animation: shine 3s infinite;
+        }
+        
+        .success-message {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 100;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .success-message.show {
+            top: 30px;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatUp 8s infinite ease-in-out;
+        }
+        
+        .floating-element:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+        
+        .floating-element:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            left: 75%;
+            top: 60%;
+            animation-delay: 2s;
+        }
+        
+        .floating-element:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 30%;
+            top: 70%;
+            animation-delay: 4s;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .book {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    
+    <div class="book">
+        <div class="pages">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="profile-pic-container" id="profilePicContainer">
+            <div class="profile-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+            <img class="profile-pic" id="preview" style="display: none;">
+            <div class="upload-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+        
+        <h2>Update Profile</h2>
+        
+        <form id="updateProfileForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-container">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-container">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <div class="input-container">
+                    <i class="fas fa-calendar-alt input-icon"></i>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-container">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="profilePhoto">Profile Photo</label>
+                <div class="input-container">
+                    <i class="fas fa-image input-icon"></i>
+                    <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*">
+                </div>
+            </div>
+            
+            <button type="submit" id="updateButton">
+                Update Profile
+            </button>
+        </form>
+    </div>
+    
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i> Profile Updated Successfully!
+    </div>
+    
+    <script>
+        // Create particles in background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 15 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random opacity
+                particle.style.opacity = Math.random() * 0.6 + 0.1;
+                
+                // Random animation
+                const duration = Math.random() * 50 + 20;
+                particle.style.animation = `floatUp ${duration}s infinite ease-in-out ${Math.random() * 20}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Form submission handler
+        document.getElementById('updateProfileForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Button animation
+            const button = document.getElementById('updateButton');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            button.disabled = true;
+            
+            // Simulate processing
+            setTimeout(function() {
+                // Show success message with animation
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.add('show');
+                
+                // Reset button
+                button.innerHTML = '<i class="fas fa-check"></i> Updated!';
+                
+                // Hide message after 3 seconds
+                setTimeout(function() {
+                    successMessage.classList.remove('show');
+                    button.innerHTML = 'Update Profile';
+                    button.disabled = false;
+                }, 3000);
+            }, 1500);
+            
+            // Create confetti effect
+            createConfetti();
+        });
+        
+        // Preview uploaded image and update profile display
+        document.getElementById('profilePhoto').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.querySelector('.profile-placeholder').style.display = 'none';
+                    
+                    // Add zoom effect
+                    preview.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        preview.style.transform = 'scale(1)';
+                    }, 300);
+                    
+                    // Change profile container animation
+                    const profilePicContainer = document.getElementById('profilePicContainer');
+                    profilePicContainer.style.animation = 'none'; // Remove pulse animation
+                    profilePicContainer.style.border = '6px solid #3d5afe'; // Change border color
+                    
+                    // Add a subtle shadow glow effect
+                    profilePicContainer.style.boxShadow = '0 8px 25px rgba(61, 90, 254, 0.4), 0 0 15px rgba(61, 90, 254, 0.6)';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Profile picture click handler - redirect to profile.html
+        document.getElementById('profilePicContainer').addEventListener('click', function(event) {
+            // If the clicked element is the upload icon, don't redirect
+            if (event.target.closest('.upload-icon')) {
+                return;
+            }
+            
+            // Redirect to profile.html
+            window.location.href = 'profile.html';
+        });
+        
+        // Alternative way to trigger file input - modified to prevent redirect
+        document.querySelector('.upload-icon').addEventListener('click', function(event) {
+            event.stopPropagation(); // Stop event from bubbling up to profilePicContainer
+            document.getElementById('profilePhoto').click();
+        });
+        
+        // Input focus effects
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.style.transform = 'translateX(5px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Create confetti effect
+        function createConfetti() {
+            const confettiContainer = document.getElementById('particles');
+            const confettiCount = 100;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Random colors
+                const colors = ['#3d5afe', '#5773ff', '#74ebd5', '#ACB6E5', '#2ecc71'];
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Starting position
+                confetti.style.left = '50%';
+                confetti.style.top = '50%';
+                
+                // Random end position
+                const endX = (Math.random() - 0.5) * window.innerWidth;
+                const endY = (Math.random() - 0.5) * window.innerHeight;
+                
+                // Animation
+                confetti.style.transform = 'translate(0, 0) rotate(0deg)';
+                confetti.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+                
+                // Append first
+                confettiContainer.appendChild(confetti);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    confetti.style.transform = `translate(${endX}px, ${endY}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.opacity = '0';
+                }, 10);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 1200);
+            }
+        }
+        
+        // Initialize particles
+        window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>
