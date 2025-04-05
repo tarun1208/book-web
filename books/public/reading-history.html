@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading History</title>
+  <style>
+    /* Modern CSS Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
+    }
+
+    /* Main Container */
+    .history-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Styles */
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .history-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      position: relative;
+    }
+
+    .history-header h1::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 3rem;
+      height: 0.25rem;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      border-radius: 0.25rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background-color: #f1f5f9;
+      color: #3b82f6;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .back-button:hover {
+      background-color: #e2e8f0;
+      transform: translateX(-0.25rem);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .back-button img {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    /* Content Container */
+    .history-content {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .history-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0.5rem;
+      background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+    }
+
+    /* Reading Progress Stats */
+    .reading-progress {
+      margin-bottom: 2.5rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .reading-progress::after {
+      content: '📚';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 3rem;
+      opacity: 0.1;
+      transform: rotate(15deg);
+    }
+
+    .progress-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .progress-title::before {
+      content: '';
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233b82f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-8 8z"/></svg>') no-repeat;
+      background-size: contain;
+    }
+
+    .progress-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border-top: 0.25rem solid;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-0.5rem);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-item:nth-child(1) {
+      border-color: #3b82f6;
+    }
+    .stat-item:nth-child(2) {
+      border-color: #10b981;
+    }
+    .stat-item:nth-child(3) {
+      border-color: #f59e0b;
+    }
+    .stat-item:nth-child(4) {
+      border-color: #8b5cf6;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: inherit;
+    }
+
+    .stat-item:nth-child(1) .stat-value {
+      color: #3b82f6;
+    }
+    .stat-item:nth-child(2) .stat-value {
+      color: #10b981;
+    }
+    .stat-item:nth-child(3) .stat-value {
+      color: #f59e0b;
+    }
+    .stat-item:nth-child(4) .stat-value {
+      color: #8b5cf6;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Tabs Navigation */
+    .history-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .history-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .history-tab {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #64748b;
+      transition: all 0.3s ease;
+      border-radius: 2rem;
+      white-space: nowrap;
+    }
+
+    .history-tab:hover {
+      background-color: #f1f5f9;
+      color: #3b82f6;
+    }
+
+    .history-tab.active {
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      color: white;
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Reading List */
+    .reading-list {
+      margin-top: 2rem;
+    }
+
+    .reading-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .reading-list-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .reading-list-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.25rem;
+      height: 1.5rem;
+      width: 0.25rem;
+      background: linear-gradient(to bottom, #3b82f6, #10b981);
+      border-radius: 0.25rem;
+    }
+
+    .filter-dropdown {
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      background-color: white;
+      font-size: 0.875rem;
+      color: #1e293b;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      min-width: 180px;
+    }
+
+    .filter-dropdown:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .filter-dropdown:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Book Items Grid */
+    .book-history-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .book-history-item {
+      display: flex;
+      background: white;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      border-left: 0.25rem solid #3b82f6;
+    }
+
+    .book-history-item:hover {
+      transform: translateY(-0.5rem);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-cover-small {
+      width: 7.5rem;
+      height: 10rem;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-cover-small img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .book-history-item:hover .book-cover-small img {
+      transform: scale(1.05);
+    }
+
+    .book-history-details {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+      display: -webkit-box;
+      
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-author {
+      font-size: 0.8125rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    .reading-date {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .completion-bar {
+      height: 0.5rem;
+      background-color: #e2e8f0;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .completion-progress {
+      height: 100%;
+      border-radius: 0.25rem;
+      transition: width 0.5s ease;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .completion-progress::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0.1) 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0.1) 100%);
+      animation: shine 2s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .completion-text {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .book-action {
+      margin-top: auto;
+      text-align: right;
+    }
+
+    .continue-reading {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      color: white;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+    }
+
+    .continue-reading:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1rem;
+      color: #64748b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 0.25rem solid rgba(59, 130, 246, 0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin: 1.5rem 0;
+    }
+
+    .empty-state.not-started {
+      background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+      border-radius: 0.75rem;
+      padding: 3rem;
+      border: 2px dashed #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .empty-state.not-started::before {
+      content: '📚';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 3rem;
+      opacity: 0.1;
+      transform: rotate(15deg);
+    }
+
+    .empty-state.not-started h3 {
+      color: #1e293b;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .empty-state.not-started p {
+      color: #64748b;
+      max-width: 36rem;
+      margin: 0 auto 1.5rem;
+      line-height: 1.6;
+    }
+
+    .empty-state img {
+      width: 8rem;
+      height: 8rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.7;
+      filter: grayscale(100%) opacity(0.7);
+    }
+
+    .browse-books-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      color: white;
+      text-decoration: none;
+      border-radius: 2rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .browse-books-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(59, 130, 246, 0.25);
+    }
+
+    .browse-books-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .progress-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .book-history-items {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .progress-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .history-content {
+        padding: 1.5rem;
+      }
+
+      .reading-progress {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <!-- Load React, React-DOM, and dependencies from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.18.13/babel.min.js"></script>
+  
+  <!-- React Component -->
+  <script type="text/babel">
+    // Mock Link component to replace react-router-dom dependency
+    const Link = ({ to, className, children }) => {
+      return (
+        <a href={to} className={className}>
+          {children}
+        </a>
+      );
+    };
+
+    // Reading History Component
+    const ReadingHistory = () => {
+      const [loading, setLoading] = React.useState(true);
+      const [activeTab, setActiveTab] = React.useState('all');
+      const [sortOrder, setSortOrder] = React.useState('recent');
+      const [readingHistory, setReadingHistory] = React.useState([]);
+      const [filteredHistory, setFilteredHistory] = React.useState([]);
+
+      // Mock reading history data
+      React.useEffect(() => {
+        // Simulate API call with mock data
+        setTimeout(() => {
+          const mockReadingHistory = [
+            {
+              id: '1',
+              title: 'The Great Adventure',
+              author: 'Arnold Bennett',
+              lastRead: '2025-04-04T12:30:00',
+              progress: 67,
+              coverURL: 'https://covers.openlibrary.org/b/id/10473697-M.jpg'
+            },
+            {
+              id: '2',
+              title: 'Quantum Physics for Beginners',
+              author: 'Richard P. Feynman',
+              lastRead: '2025-04-02T18:15:00',
+              progress: 42,
+              coverURL: 'https://covers.openlibrary.org/b/id/10312345-M.jpg'
+            },
+            {
+              id: '3',
+              title: 'Galaxy Far Away',
+              author: 'Landry Q. Walker',
+              lastRead: '2025-03-28T09:45:00',
+              progress: 100,
+              coverURL: 'https://covers.openlibrary.org/b/id/10456789-M.jpg'
+            },
+            {
+              id: '4',
+              title: 'History of the World',
+              author: 'J. M. Roberts',
+              lastRead: '2025-03-25T14:20:00',
+              progress: 89,
+              coverURL: 'https://covers.openlibrary.org/b/id/10398765-M.jpg'
+            },
+            {
+              id: '5',
+              title: 'Magical Kingdom',
+              author: 'Thomas R. Burtt',
+              lastRead: '2025-03-15T20:10:00',
+              progress: 32,
+              coverURL: 'https://covers.openlibrary.org/b/id/10432109-M.jpg'
+            }
+          ];
+          
+          setReadingHistory(mockReadingHistory);
+          setFilteredHistory(mockReadingHistory);
+          setLoading(false);
+        }, 1000);
+      }, []);
+
+      // Filter and sort logic
+      React.useEffect(() => {
+        let results = [...readingHistory];
+        
+        // Filter by tab
+        if (activeTab === 'completed') {
+          results = results.filter(item => item.progress === 100);
+        } else if (activeTab === 'in-progress') {
+          results = results.filter(item => item.progress > 0 && item.progress < 100);
+        } else if (activeTab === 'not-started') {
+          results = results.filter(item => item.progress === 0);
+        }
+        
+        // Sort by selected order
+        if (sortOrder === 'recent') {
+          results.sort((a, b) => new Date(b.lastRead) - new Date(a.lastRead));
+        } else if (sortOrder === 'progress') {
+          results.sort((a, b) => b.progress - a.progress);
+        } else if (sortOrder === 'title') {
+          results.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        
+        setFilteredHistory(results);
+      }, [activeTab, sortOrder, readingHistory]);
+
+      // Format date to a more readable format
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const today = new Date();
+        
+        // If today
+        if (date.toDateString() === today.toDateString()) {
+          return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+        
+        // If yesterday
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (date.toDateString() === yesterday.toDateString()) {
+          return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+        
+        // Otherwise show full date
+        return date.toLocaleDateString([], { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      };
+
+      // Calculate reading stats
+      const calculateStats = () => {
+        const totalBooks = readingHistory.length;
+        const completedBooks = readingHistory.filter(book => book.progress === 100).length;
+        const inProgressBooks = readingHistory.filter(book => book.progress > 0 && book.progress < 100).length;
+        
+        const totalProgress = readingHistory.reduce((sum, book) => sum + book.progress, 0);
+        const averageProgress = totalBooks > 0 ? Math.round(totalProgress / totalBooks) : 0;
+        
+        return {
+          totalBooks,
+          completedBooks,
+          inProgressBooks,
+          averageProgress
+        };
+      };
+
+      const stats = calculateStats();
+
+      if (loading) {
+        return (
+          <div className="loading">
+            Loading your reading history...
+          </div>
+        );
+      }
+
+      return (
+        <div className="history-container">
+          <header className="history-header">
+            <h1>Your Reading History</h1>
+            <Link to="dashboard.html" className="back-button">
+              <img src="https://cdn-icons-png.flaticon.com/512/93/93634.png" alt="Back Arrow" />
+              Back 
+            </Link>
+          </header>
+          
+          <div className="history-content">
+            {/* Reading Progress Stats */}
+            <div className="reading-progress">
+              <h2 className="progress-title">Reading Progress</h2>
+              <div className="progress-stats">
+                <div className="stat-item">
+                  <div className="stat-value">{stats.totalBooks}</div>
+                  <div className="stat-label">Total Books</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{stats.completedBooks}</div>
+                  <div className="stat-label">Completed</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{stats.inProgressBooks}</div>
+                  <div className="stat-label">In Progress</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{stats.averageProgress}%</div>
+                  <div className="stat-label">Average Progress</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Tabs and Filters */}
+            <div className="history-tabs">
+              <button 
+                className={`history-tab ${activeTab === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveTab('all')}
+              >
+                All Books
+              </button>
+              <button 
+                className={`history-tab ${activeTab === 'in-progress' ? 'active' : ''}`}
+                onClick={() => setActiveTab('in-progress')}
+              >
+                In Progress
+              </button>
+              <button 
+                className={`history-tab ${activeTab === 'completed' ? 'active' : ''}`}
+                onClick={() => setActiveTab('completed')}
+              >
+                Completed
+              </button>
+              <button 
+                className={`history-tab ${activeTab === 'not-started' ? 'active' : ''}`}
+                onClick={() => setActiveTab('not-started')}
+              >
+                Not Started
+              </button>
+            </div>
+            
+            {/* Reading List */}
+            <div className="reading-list">
+              <div className="reading-list-header">
+                <h2 className="reading-list-title">Your Books</h2>
+                <select 
+                  className="filter-dropdown"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                >
+                  <option value="recent">Recently Read</option>
+                  <option value="progress">Progress</option>
+                  <option value="title">Title</option>
+                </select>
+              </div>
+              
+              {filteredHistory.length > 0 ? (
+                <div className="book-history-items">
+                  {filteredHistory.map(book => (
+                    <div className="book-history-item" key={book.id}>
+                      <div className="book-cover-small">
+                        <img src={book.coverURL} alt={`Cover of ${book.title}`} />
+                      </div>
+                      <div className="book-history-details">
+                        <h3 className="book-title">{book.title}</h3>
+                        <p className="book-author">by {book.author}</p>
+                        <p className="reading-date">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          Last read: {formatDate(book.lastRead)}
+                        </p>
+                        <div className="completion-bar">
+                          <div 
+                            className="completion-progress" 
+                            style={{ width: `${book.progress}%` }}
+                          />
+                        </div>
+                        <p className="completion-text">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"></path>
+                          </svg>
+                          {book.progress}% completed
+                        </p>
+                        <div className="book-action">
+                          <Link to={`/reader/${book.id}`} className="continue-reading">
+                            {book.progress === 100 ? 'Read Again' : 'Continue Reading'}
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : activeTab === 'not-started' ? (
+                <div className="empty-state not-started">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1ib29rLW9wZW4iPjxwYXRoIGQ9TTIgM2gxOGEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJIMmEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMiAzaDE4YTIgMiAwIDAgMSAyIDJ2MTRhMiAyIDAgMCAxLTIgMkgyYTIgMiAwIDAgMS0yLTJWNWEyIDIgMCAwIDEgMi0yeiIvPjxwYXRoIGQ9Ik0yIDE2aDE2Ii8+PHBhdGggZD0iTTIgMTJoMTYiLz48L3N2Zz4=" alt="No books found" />
+                  <h3>Ready to start your next adventure?</h3>
+                  <p>You haven't started any books yet. Browse our collection to find your perfect read.</p>
+                  <a 
+                    href="https://openlibrary.org" 
+                    className="browse-books-btn"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Browse Books on Open Library
+                  </a>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1ib29rLW9wZW4iPjxwYXRoIGQ9Ik0yIDNoMThhMiAyIDAgMCAxIDIgMnYxNGEyIDIgMCAwIDEtMiAySDJhMiAyIDAgMCAxLTItMlY1YTIgMiAwIDAgMSAyLTJ6Ii8+PHBhdGggZD0iTTIgM2gxOGEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJIMmEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMiAxNmgxNiIvPjxwYXRoIGQ9Ik0yIDEyaDE2Ii8+PC9zdmc+" alt="No books found" />
+                  <h3>No books in this category</h3>
+                  <p>You haven't added any books to this category yet. Browse our library to find something you'll love.</p>
+                  <Link to="/browse" className="browse-books-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Browse Books
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Render the main app
+    const App = () => {
+      return (
+        <ReadingHistory />
+      );
+    };
+
+    // Render to DOM
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
